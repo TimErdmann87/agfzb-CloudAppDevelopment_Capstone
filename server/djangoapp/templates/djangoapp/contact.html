@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends './index.html' %}
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    
+    {% block content %}
+    <h2 style=width:50vw;margin:2rem 0 0 2rem>
+        Our Contact Details
+    </h2>
+    <div class="container" style="margin-left:1rem">
+        <div class="row">
+            <div class="col-md-4">
+                <address>
+                <strong>Best Cars</strong><br>
+                8759 Example Road<br>
+                Test City, CA 54321<br>
+                USA<br>
+                </br>
+                Phone: (123) 456-7890
+                </address>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+
+</body>
+</html>

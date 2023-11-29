@@ -14,11 +14,48 @@
 </head>
 
     <body>
-    <!-- Remove this line the first time you edit this file -->
-     This is the index page of your Django app!
-    <!--Add a nav bar here -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                  <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Best Cars</a>
+                  <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About Us</a>
+            </div>
 
+        </div>
+    </nav>
+    {% block content %}
+    {% endblock content %}
+    
+    
     <!--Add a dealer table here -->
+
+
+    <footer class="page-footer font-small pt-4 fixed-bottom" style="background-color:#e5e5e5">
+
+        <!-- Footer Links -->
+        <div class="container-fluid text-center text-md-left" style="margin-left:1rem">
+      
+          <!-- Grid row -->
+          <div class="row">
+      
+            <!-- Grid column -->
+            <div class="col-md-6 mt-md-0 mt-3 ">
+      
+                <!-- Content -->
+                <a href="{% url 'djangoapp:contact' %}" style="text-decoration:none;color:unset">Contact us</a>
+                
+            </div>
+          </div>
+          <!-- Grid row -->
+        </div>
+      
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2023 Copyright:
+          <a href="{% url 'djangoapp:index' %}"> BestCars.com</a>
+        </div>
+        <!-- Copyright -->
+      
+      </footer>
 
     </body>
 
