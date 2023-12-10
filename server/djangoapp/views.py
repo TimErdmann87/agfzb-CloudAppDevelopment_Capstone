@@ -106,20 +106,22 @@ def add_review(request, dealer_id):
 
     if request.user.is_authenticated:
         review = dict()
-        review["id"] = "TEST_ID",
-        review["dealership"] = dealer_id,
-        review["name"] = "TEST_NAME",
-        review["review"] = "TEST_review",
+        review["id"] = "TEST_ID"
+        review["dealership"] = dealer_id
+        review["name"] = "TEST_NAME"
+        review["review"] = "TEST_review"
         review["purchase"] = "TEST_purchase"
-        review["purchase_date"] = datetime.utcnow().isoformat(),
-        review["car_make"] = "TEST_car_make",
-        review["car_model"] = "TEST_car_model",
-        review["car_year"] = "TEST_car_year",
+        review["purchase_date"] = datetime.utcnow().isoformat()
+        review["car_make"] = "TEST_car_make"
+        review["car_model"] = "TEST_car_model"
+        review["car_year"] = "TEST_car_year"
 
         url = r"https://prox87-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
         
         json_payload = dict()
         json_payload["review"] = review
+
+        print(json_payload)
 
         response = post_request(url, json_payload)
 
