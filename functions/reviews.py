@@ -32,7 +32,7 @@ def get_reviews():
 
     # Define the query based on the 'dealership' ID
     selector = {
-        'id': dealership_id
+        'dealership': dealership_id
     }
 
     # Execute the query using the query method
@@ -42,7 +42,7 @@ def get_reviews():
         print("Error: ", cloudant_exception)
         return jsonify({"error": "Something went wrong on the server"}), 500
     except (requests.exceptions.RequestException, ConnectionResetError) as err:
-        print("Error - COnnection: ", err)
+        print("Error - Connection: ", err)
         return jsonify({"error": "Something went wrong on the server"}), 500
 
     # Create a list to store the documents

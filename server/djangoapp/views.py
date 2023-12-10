@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -78,11 +78,8 @@ def registration_request(request):
 
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
-    # context = {}
+    
     if request.method == "GET":
-        # before adding HTTP request
-        # return render(request, 'djangoapp/index.html', context)
-
         url = r"https://prox87-3000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/dealership"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
@@ -98,11 +95,36 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         url = r"https://prox87-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
         dealer_details = get_dealer_reviews_from_cf(url, dealerId=dealer_id)
-        reviews = ' '.join([d.review for d in dealer_details])
+        
+        reviews = ' | '.join([f"{d.review} [sentiment: {d.sentiment}]" for d in dealer_details])
         
         return HttpResponse(reviews)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
-# ...
+def add_review(request, dealer_id):
 
+    if request.user.is_authenticated:
+        review = dict()
+        review["id"] = "TEST_ID",
+        review["dealership"] = dealer_id,
+        review["name"] = "TEST_NAME",
+        review["review"] = "TEST_review",
+        review["purchase"] = "TEST_purchase"
+        review["purchase_date"] = datetime.utcnow().isoformat(),
+        review["car_make"] = "TEST_car_make",
+        review["car_model"] = "TEST_car_model",
+        review["car_year"] = "TEST_car_year",
+
+        url = r"https://prox87-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
+        
+        json_payload = dict()
+        json_payload["review"] = review
+
+        response = post_request(url, json_payload)
+
+        print(response)
+
+        return HttpResponse(response["message"])
+    
+    return HttpResponse("Authenticated required")
