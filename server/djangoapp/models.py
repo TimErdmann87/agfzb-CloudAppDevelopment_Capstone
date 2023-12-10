@@ -2,13 +2,39 @@ from django.db import models
 from django.utils.timezone import now
 
 
-# Create your models here.
+class CarMake(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField()
+    headquarters = models.CharField(max_length=50)
 
-# <HINT> Create a Car Make model `class CarMake(models.Model)`:
-# - Name
-# - Description
-# - Any other fields you would like to include in car make model
-# - __str__ method to print a car make object
+    def __str__(self):
+        CarMakeObjectString = f"name: {self.name},\
+            \ndescription: {self.description},\
+            \nheadquarters: {self.headquarters}"
+        return CarMakeObjectString
+
+
+class CarModel(models.Model):
+    TYPE_CHOICES = [
+        ("SEDAN", "Sedan"),
+        ("SUV", "SUV"),
+        ("WAGON", "Wagon"),
+    ]
+
+    make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
+    dealerId = models.IntegerField()
+    name = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES)
+    year = models.DateField()
+
+    def __str__(self):
+        CarModelObjectString = f"make: {self.make},\
+            \ndealerId: {str(self.dealerId)},\
+            \nname: {self.name},\
+            \ntype: {self.type},\
+            \nyear: {str(self.year)}"
+
+        return CarModelObjectString
 
 
 # <HINT> Create a Car Model model `class CarModel(models.Model):`:
