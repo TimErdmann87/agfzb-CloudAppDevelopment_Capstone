@@ -3,12 +3,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, post_request, get_dealers_by_id
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
 import logging
 import json
+import uuid
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -80,25 +81,31 @@ def registration_request(request):
 def get_dealerships(request):
     
     if request.method == "GET":
-        url = r"https://prox87-3000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/dealership"
-        # Get dealers from the URL
+        url = r"https://prox87-3000.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/dealership"
+        
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        context = dict()
+        context["dealership_list"] = dealerships
+        
+        return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 def get_dealer_details(request, dealer_id):
     
     if request.method == "GET":
-        url = r"https://prox87-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
-        dealer_details = get_dealer_reviews_from_cf(url, dealerId=dealer_id)
+        url = r"https://prox87-3000.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/dealership"
+        dealer = get_dealers_by_id(url=url, dealer_id = dealer_id)
+
+        url = r"https://prox87-5000.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
+        reviews = get_dealer_reviews_from_cf(url, dealerId=dealer_id)
         
-        reviews = ' | '.join([f"{d.review} [sentiment: {d.sentiment}]" for d in dealer_details])
+        context = dict()
+        context["dealer_id"] = dealer_id
+        context["dealer_name"] = dealer[0].full_name
+        context["reviews_list"] = reviews
         
-        return HttpResponse(reviews)
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
@@ -106,17 +113,17 @@ def add_review(request, dealer_id):
 
     if request.user.is_authenticated:
         review = dict()
-        review["id"] = "TEST_ID"
+        review["id"] = str(uuid.uuid4())
         review["dealership"] = dealer_id
-        review["name"] = "TEST_NAME"
-        review["review"] = "TEST_review"
-        review["purchase"] = "TEST_purchase"
+        review["name"] = "John Doe"
+        review["review"] = "Amazing dealership. Enjoyed the process"
+        review["purchase"] = True
         review["purchase_date"] = datetime.utcnow().isoformat()
-        review["car_make"] = "TEST_car_make"
-        review["car_model"] = "TEST_car_model"
-        review["car_year"] = "TEST_car_year"
+        review["car_make"] = "BMW"
+        review["car_model"] = "M3"
+        review["car_year"] = "2022"
 
-        url = r"https://prox87-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
+        url = r"https://prox87-5000.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
         
         json_payload = dict()
         json_payload["review"] = review

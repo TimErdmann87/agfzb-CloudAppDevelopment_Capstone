@@ -7,12 +7,100 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
-    <body>
+<body>
 
     <!--Add a nav bar here -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                  <a class="navbar-brand" href="{% url 'djangoapp:index' %}" style="font-weight:bold">Dealership Review</a>
+                  <a class="navbar-brand" href="{% url 'djangoapp:about' %}" style="padding-left:3rem">About Us</a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                <li>
+                    <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer_id %}">Add Review</a>
+                    <a class="btn btn-link" href="#">{{ user.first_name }} ({{ user.username }})</a>
+                    <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li>
+                    <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Username" name="username" >
+                            <input type="password" class="form-control" placeholder="Password" name="psw" >
+                            <button class="btn btn-primary" type="submit">Login</button>
+                            <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                        </div>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </nav>
 
     <!-- Add reviews as cards -->
+    <div style="margin:1.75rem 0 0 1.75rem">
+        {% if reviews_list|length > 0 %}
+        <h2>Reviews for {{dealer_name}}</h2>
+        {% else %}
+        <h2>No reviews found for {{dealer_name}</h2>
+        {% endif %}
+    </div>
 
-    </body>
+    <div class="card-columns" style="margin:1.75rem">
+        {% for review in reviews_list%}
+        <div class="card">
+            {% if review.sentiment == "positive" %}
+            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" width=30 style="margin:1.5rem">
+            {% elif review.sentiment == "negative" %}
+            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/negative.png" width=30 style="margin:1.5rem">
+            {% elif review.sentiment == "neutral" %}
+            <img class="card-img-left" src="{{MEDIA_URL}}/emoji/neutral.png" width=30 style="margin:1.5rem">
+            {% else %}
+            <div style="margin:1.5rem 0 0 1.5rem">N/A<div>
+            {% endif %}
+            <div class="card-body" style="background-color:#f8f8f8">
+                <h5 class="card-title">{{review.car_make}} {{review.car_model}}</h5>
+                <h5 class="card-title">{{review.car_year}}</h5>
+                <div class="card-text">{{review.review}}</div>
+            </div>
+        </div>
+            {% endfor %}
+    </div>
+
+
+
+    <footer class="page-footer font-small pt-4 fixed-bottom" style="background-color:#e5e5e5">
+
+        <!-- Footer Links -->
+        <div class="container-fluid text-center text-md-left" style="margin-left:1rem">
+      
+          <!-- Grid row -->
+          <div class="row">
+      
+            <!-- Grid column -->
+            <div class="col-md-6 mt-md-0 mt-3 ">
+      
+                <!-- Content -->
+                <a href="{% url 'djangoapp:contact' %}" style="text-decoration:none;color:unset">Contact us</a>
+                
+            </div>
+          </div>
+          <!-- Grid row -->
+        </div>
+      
+        <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">© 2023 Copyright:
+          <a href="{% url 'djangoapp:index' %}"> BestCars.com</a>
+        </div>
+        <!-- Copyright -->
+      
+    </footer>
+
+</body>
 
 </html>
