@@ -39,11 +39,11 @@ def login_request(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return render(request, 'djangoapp/index.html', context)
+            return redirect('djangoapp:index')
         else:
-            return render(request, 'djangoapp/index.html', context)
+            return redirect('djangoapp:index')
     else:
-        return render(request, 'djangoapp/index.html', context)
+        return redirect('djangoapp:index')
 
 # Create a `logout_request` view to handle sign out request
 def logout_request(request):
@@ -119,20 +119,26 @@ def add_review(request, dealer_id):
         context["dealer_id"] = dealer_id
         context["dealer_name"] = dealer[0].full_name
 
+        cars = CarModel.objects.filter(dealerId=dealer_id)
+        context["dealer_cars"] = cars
+
         return render(request, 'djangoapp/add_review.html', context)
 
     elif request.method == "POST":
         if request.user.is_authenticated:
+            car_id = request.POST["car"]
+            car = CarModel.objects.get(pk=car_id)
+
             review = dict()
             review["id"] = str(uuid.uuid4())
             review["dealership"] = dealer_id
-            review["name"] = "John Doe"
-            review["review"] = "Amazing dealership. Enjoyed the process"
-            review["purchase"] = True
+            review["name"] = request.user.username
+            review["review"] = request.POST["content"]
+            review["purchase"] = True if request.POST["purchasecheck"] == "on" else False
             review["purchase_date"] = datetime.utcnow().isoformat()
-            review["car_make"] = "BMW"
-            review["car_model"] = "M3"
-            review["car_year"] = "2022"
+            review["car_make"] = car.make.name
+            review["car_model"] = car.name
+            review["car_year"] = car.year.strftime("%Y")
 
             url = r"https://prox87-5000.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/review"
             
@@ -145,6 +151,6 @@ def add_review(request, dealer_id):
 
             print(response)
 
-            return HttpResponse(response["message"])
+            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
     
     return HttpResponse("Authenticated required")

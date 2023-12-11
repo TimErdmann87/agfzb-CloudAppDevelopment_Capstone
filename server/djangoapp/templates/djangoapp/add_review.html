@@ -17,7 +17,8 @@
     <div style="margin:1.75rem">
         <h2 style="margin-bottom:1.5rem">Add a review about {{dealer_name}}</h2>
         
-        <form action="{% url 'djangoapp:add_review' dealer_id%}">
+        <form action="{% url 'djangoapp:add_review' dealer_id%}" method="POST">
+            {% csrf_token %}
             <h5 style="margin-bottom:1rem">Enter your review:</h5>
             <textarea class="form-control" id="content" name="content" rows="2" required style="margin-bottom:1.5rem"></textarea>
             <div style="margin-bottom:1.5rem">
@@ -27,15 +28,15 @@
                 </label>
             </div>
             <select name="car" id="car" class="form-select" required style="margin-bottom:1.5rem">
-                {% for car in cars %}
+                {% for car in dealer_cars %}
                 <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year|date:"Y" }}</option>
                 {% endfor %}
             </select>
             <div style="margin-bottom:2rem">
-                <h5 style="margin-bottom:1rem">Select your ourchase date:</h5>
+                <h5 style="margin-bottom:1rem">Select your purchase date:</h5>
                 <input class="date-own form-control" type="date" name="purchasedate" id="purchasedate" style="width: 300px"/>
             </div>
-            <button type="button" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
     {% endblock content %}
